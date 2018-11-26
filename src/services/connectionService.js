@@ -1,8 +1,13 @@
 const TEACHER = 'teacher'
 const STUDENT = 'student'
 
-const getConnectionType = req => (
-	req.url.split('type=')[1]
-)
+const getParam = (req, name) => {
+	let labelRemoved = req.url.split(name+'=')[1]
+	return labelRemoved ? labelRemoved.split('&')[0] : labelRemoved
+}
 
-export default { getConnectionType, TEACHER, STUDENT }
+export default { 
+	getParam, 
+	TEACHER, 
+	STUDENT 
+}
