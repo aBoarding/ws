@@ -1,21 +1,23 @@
 export default () => {
-	let clients = [],
+	let clients = {},
 		onAllDisconnectedCallback
 
-	const subscribe = client => {
-		clients.push(client)
-		client.on('close', () => unsubscribe(client))
+	const subscribe = (topic, client) => {
+		if(!clients[topic]) clients[topic] = []
+
+		clients[topic].push(client)
+		client.on('close', () => unsubscribe(topic, client))
 	}
 
-	const unsubscribe = clientToDisconnect => {
-		clients = clients.filter(client => client != clientToDisconnect)
+	const unsubscribe = (topic, clientToDisconnect) => {
+		clients[topic] = clients[topic].filter(client => client != clientToDisconnect)
 		
-		clients.length == 0 && onAllDisconnectedCallback && 
+		clients[topic].length == 0 && onAllDisconnectedCallback && 
 			onAllDisconnectedCallback()
 	}
 
-	const broadcast = msg => {
-		clients.forEach(client => {
+	const broadcast = (topic, msg) => {
+		clients[topic] && clients[topic].forEach(client => {
 			client.readyState === client.OPEN &&
 				client.send(typeof msg === 'string' ? msg : JSON.stringify(msg))
 				
